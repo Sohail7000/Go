@@ -2,39 +2,17 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
-	"errors"
+
+	"example.com/bank/fileops"
+	"github.com/Pallinder/go-randomdata"
 )
 
 const accountBalanceFile = "balance.txt"
 
-func getBalanceFromFile() (float64, error) {
-	data, err := os.ReadFile(accountBalanceFile)
-
-	if err != nil{
-		return 1000 , errors.New("failed to find balance file")
-	}
-
-	balanceText := string(data)
-	balance, err := strconv.ParseFloat(balanceText, 64)
-
-	if err != nil{
-		return 1000, errors.New ("failed to parse stored balance value")
-	}
-
-	return balance, nil
-}
-
-func writeBalanceToFile(balance float64) {
-	balanceText := fmt.Sprint(balance)
-	os.WriteFile(accountBalanceFile, []byte(balanceText), 0622)
-}
-
 func main() {
-	var accountBalance, err = getBalanceFromFile()
+	var accountBalance, err = fileops.GetValueFromFile(accountBalanceFile)
 
-	if err != nil{
+	if err != nil {
 		fmt.Println("ERROR")
 		fmt.Println(err)
 		fmt.Println("-----------")
@@ -47,12 +25,9 @@ func main() {
 
 	fmt.Println("Welcome to Go Bank!")
 	for {
-		fmt.Println("What do you want to do?")
-		fmt.Println("1. Check balance")
-		fmt.Println("2. Deposit money")
-		fmt.Println("3. Withdraw money")
-		fmt.Println("4. Exit")
 
+		fmt.Println("We are available throughout the world even at: ", randomdata.Country(randomdata.FullCountry))
+		presentOptions()
 		fmt.Printf("Please enter your choice: ")
 		fmt.Scan(&choice)
 
@@ -68,7 +43,7 @@ func main() {
 			}
 			accountBalance += depositedAmount
 			fmt.Printf("Your current account balance now is %.2f\n", accountBalance)
-			writeBalanceToFile(accountBalance)
+			fileops.WriteFloatToFile(accountBalanceFile, accountBalance)
 		case 3:
 			fmt.Printf("Enter the amount you wish withdraw: ")
 			fmt.Scan(&withdrawAmount)
@@ -82,13 +57,13 @@ func main() {
 			}
 			accountBalance -= withdrawAmount
 			fmt.Printf("Your current account balance now is %.2f\n", accountBalance)
-			writeBalanceToFile(accountBalance)
+			fileops.WriteFloatToFile(accountBalanceFile, accountBalance)
 		default:
 			fmt.Println("GoodBye")
 			return
 		}
 	}
-	
+
 }
 
 // if choice == 1 {
